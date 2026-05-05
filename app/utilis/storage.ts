@@ -1,26 +1,43 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { saveChat } from "./chatStorage"; // you will create this
 export type Connection = {
   id: string;
   name: string;
-  time: string;
+  createdAt: string;
 };
 const KEY = "connections";
 
 export const getConnections = async (): Promise<Connection[]> => {
   const data = await AsyncStorage.getItem(KEY);
-  return data ? JSON.parse(data) : [];
+  if (!data) return [];
+  try {
+    const parsed: Connection[] = JSON.parse(data);
+    return parsed.sort((a, b) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  } catch { return []; }
 };
 
-export const addConnection = async (name: string): Promise<void> => {
+export const addConnection = async (userId: string, name: string)
+  : Promise<void> => {
+
   const current = await getConnections();
 
+  const exists = current.find(u => u.id === userId);
+  if (exists) return;
+
   const newConnection: Connection = {
-    id: Date.now().toString(),
+    id: userId,
     name,
-    time: new Date().toLocaleTimeString(),
+    createdAt: new Date().toISOString(),
   };
 
   await saveConnections([...current, newConnection]);
+
+  // 🔥 THIS IS WHAT YOU ARE MISSING
+  await saveChat({
+    connectionId: userId,
+    messages: []
+  });
 };
 export const saveConnections = async (
   connections: Connection[]

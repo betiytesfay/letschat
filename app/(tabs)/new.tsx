@@ -42,7 +42,7 @@ export default function New() {
         renderItem={({ item }) => (
           <Pressable
             onPress={async () => {
-              await addConnection(item.name);
+              await addConnection(item.id, item.name);
               console.log("Connected:", item.name);
             }}
             style={styles.card}
