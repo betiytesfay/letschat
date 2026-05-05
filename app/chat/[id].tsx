@@ -52,13 +52,12 @@ export default function ChatScreen() {
     setMessage("");
   };
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#6b086e" }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <KeyboardAvoidingView
         style={{ flex: 1, backgroundColor: "#f7f2ff" }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={10}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0}
       >
-
         <StatusBar style="light" translucent />
 
         <View
@@ -86,16 +85,21 @@ export default function ChatScreen() {
         {/* MESSAGES AREA */}
         <FlatList data={chat?.messages ?? []}
           keyExtractor={(item) => item.id}
+          contentContainerStyle={{ padding: 15 }}
+
+          keyboardShouldPersistTaps="handled"
           renderItem={({ item }) => (
             <View style={{
+
               alignSelf: item.senderId === "me" ? "flex-end" : "flex-start",
               backgroundColor: item.senderId === "me" ? "#6b086e" : "#ddd",
               padding: 10,
               marginVertical: 5,
               borderRadius: 10,
-              maxWidth: "80%"
-            }}>
-              <Text>{item.text}</Text>
+              maxWidth: "80%",
+              marginHorizontal: 10,
+            }} >
+              <Text style={{ color: "white" }}>{item.text}</Text>
             </View>
           )
           }>
@@ -114,7 +118,7 @@ export default function ChatScreen() {
 
           }}
         >
-          <KeyboardAvoidingView />
+
           <TextInput
 
             value={message}
@@ -129,7 +133,7 @@ export default function ChatScreen() {
               paddingHorizontal: 15,
               paddingVertical: 8,
               backgroundColor: "#f9f9f9",
-
+              elevation: 0,
             }}
           />
           <Pressable onPress={sendMessage}>
